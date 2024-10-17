@@ -21,7 +21,7 @@ user_input = st.text_input("Escribe tu mensaje:")
 
 # Inicializa el modelo de lenguaje
 if user_input:
-    llm = OpenAI(model_name="text-davinci-003")  # Cambia según el modelo que uses
+    llm = OpenAI(model_name="gpt-3.5-turbo", openai_api_key=openai_api_key)
     # Aquí puedes procesar el input y la base de conocimientos
     context = "\n".join(knowledge_base)  # Combina todos los textos en un solo contexto
     prompt = f"{context}\n\nUser: {user_input}\nChatbot:"

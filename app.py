@@ -1,31 +1,20 @@
-import streamlit as st
-from langchain.llms import OpenAI
 import os
+import openai
+from langchain.llms import OpenAI
 
-# Inicializa el modelo
-llm = OpenAI(model_name="gpt-3.5-turbo", openai_api_key=openai_api_key)
-# Función para cargar archivos de texto
-def load_texts(data_folder):
-    texts = []
-    for filename in os.listdir(data_folder):
-        if filename.endswith(".txt"):
-            with open(os.path.join(data_folder, filename), 'r') as file:
-                texts.append(file.read())
-    return texts
+# Cargar la clave de API desde las variables de entorno
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# Carga los textos desde la carpeta 'data'
-data_folder = 'data'
-knowledge_base = load_texts(data_folder)
+# Verificar que la clave de API se está cargando correctamente
+if openai.api_key is None:
+    raise ValueError("La clave API de OpenAI no está configurada correctamente.")
 
-# Configuración de la interfaz
-st.title("Chatbot con Langchain y Streamlit")
-user_input = st.text_input("Escribe tu mensaje:")
+# Inicializa el modelo usando la biblioteca de OpenAI directamente
+response = openai.Completion.create(
+    engine="gpt-3.5-turbo",  # O usa "text-davinci-003" si prefieres
+    prompt="Hola, ¿cómo puedo ayudarte?",
+    max_tokens=150
+)
 
-# Inicializa el modelo de lenguaje
-if user_input:
-    llm = OpenAI(model_name="gpt-3.5-turbo", openai_api_key=openai_api_key)
-    # Aquí puedes procesar el input y la base de conocimientos
-    context = "\n".join(knowledge_base)  # Combina todos los textos en un solo contexto
-    prompt = f"{context}\n\nUser: {user_input}\nChatbot:"
-    response = llm(prompt)
-    st.write(response)
+# Imprime la respuesta del modelo
+print(response.choices[0].text)
